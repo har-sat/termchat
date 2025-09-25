@@ -13,7 +13,7 @@ CREATE TABLE rooms (
     name VARCHAR(32) UNIQUE NOT NULL,
     created_at TIMESTAMP NOT NULL,
     creator_id UUID NOT NULL REFERENCES users(id),
-    owner_id UUID NOT NULL REFERENCES users(id),
+    owner_id UUID NOT NULL REFERENCES users(id)
 );
 
 CREATE TABLE messages (
@@ -22,7 +22,7 @@ CREATE TABLE messages (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     sender_id UUID NOT NULL REFERENCES users(id),
-    room_id UUID NOT NULL REFERENCES rooms(id),
+    room_id UUID NOT NULL REFERENCES rooms(id)
 );
 
 -- +goose Down
