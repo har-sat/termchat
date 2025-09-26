@@ -8,12 +8,17 @@ import (
 	"os"
 
 	"github.com/go-chi/chi"
+	"github.com/gorilla/websocket"
+	"github.com/har-sat/termchat/internal/server/database"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
-// type Config struct {
-// 	DB *database.Queries
-// }
+type Config struct {
+	DB *database.Queries
+	Upgrader websocket.Upgrader
+
+}
 
 func main() {
 	err := godotenv.Load(".env")
@@ -30,22 +35,29 @@ func main() {
 	if dbUrl == "" {
 		log.Fatalf("DB_URL not found")
 	}
-
-	_, err = sql.Open("postgres", dbUrl)
+	conn, err := sql.Open("postgres", dbUrl)
 	if err != nil {
 		log.Fatalf("Couldn't connect to database: %v\n", err)
 	}
 
+	cfg := Config{
+		DB: database.New(conn),
+		Upgrader: websocket.Upgrader{
+			ReadBufferSize: 1024,
+			WriteBufferSize: 1024,
+		},
+	}
 	router := chi.NewRouter()
-	router.Get("/ready", readinessCheck)
-	router.Get("/err", errorReadinessCheck)
+	router.Get("/ready", cfg.readinessCheck)
+	router.Get("/err", cfg.errorReadinessCheck)
+	router.Get("/upgrade", cfg.HandlerUpgradeConnection)
 
 	server := http.Server{
 		Addr: ":" + port,
 		Handler: router,
 	}
 
-	fmt.Println("Starting server on PORT: ", port)
+	fmt.Printf("Starting server on PORT: %v\n", port)
 	err = server.ListenAndServe()
 	if err != nil {
 		log.Fatal("Server error: ", err)
