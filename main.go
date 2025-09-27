@@ -17,7 +17,7 @@ import (
 type Config struct {
 	DB *database.Queries
 	Upgrader websocket.Upgrader
-
+	Clients map[*websocket.Conn]bool
 }
 
 func main() {
@@ -46,6 +46,7 @@ func main() {
 			ReadBufferSize: 1024,
 			WriteBufferSize: 1024,
 		},
+		Clients: make(map[*websocket.Conn]bool),
 	}
 	router := chi.NewRouter()
 	router.Get("/ready", cfg.readinessCheck)

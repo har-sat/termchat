@@ -12,6 +12,7 @@ func (cfg *Config) HandlerUpgradeConnection(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	defer conn.Close()
+	cfg.Clients[conn] = true
 
 	for {
 		messageType, p, err := conn.ReadMessage()
@@ -19,10 +20,12 @@ func (cfg *Config) HandlerUpgradeConnection(w http.ResponseWriter, r *http.Reque
 			fmt.Println(err)
 			return
 		}
-
-		if err := conn.WriteMessage(messageType, p); err != nil {
-			fmt.Println(err)
-			return
+		for client := range cfg.Clients {
+			err := client.WriteMessage(messageType, p); 
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 		}
 	}
 }

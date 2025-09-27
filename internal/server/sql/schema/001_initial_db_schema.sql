@@ -1,4 +1,4 @@
--- +gooseUp
+-- +goose Up
 CREATE TABLE users (
     id UUID PRIMARY KEY,
     username VARCHAR(32) UNIQUE NOT NULL,
@@ -6,7 +6,6 @@ CREATE TABLE users (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
-
 
 CREATE TABLE rooms (
     id UUID PRIMARY KEY,
@@ -26,6 +25,6 @@ CREATE TABLE messages (
 );
 
 -- +goose Down
-DROP TABLE users;
-DROP TABLE rooms;
 DROP TABLE messages;
+DROP TABLE rooms;
+DROP TABLE users;
