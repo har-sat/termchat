@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/har-sat/termchat/internal/server/database"
+	_ "github.com/lib/pq"
 )
 
 type Config struct {
