@@ -8,7 +8,7 @@ import (
 func (cfg *Config) HandlerUpgradeConnection(w http.ResponseWriter, r *http.Request) {
 	conn, err := cfg.Upgrader.Upgrade(w, r, w.Header())
 	if err != nil {
-		respondWithError(w, 400, err)
+		respondWithError(w, 400, fmt.Sprintf("Error upgrading connection: %v\n", err))
 		return
 	}
 	defer conn.Close()

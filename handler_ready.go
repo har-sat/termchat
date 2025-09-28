@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"net/http"
 )
 
@@ -10,5 +9,5 @@ func (cfg *Config) readinessCheck(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cfg *Config) errorReadinessCheck(w http.ResponseWriter, r *http.Request) {
-	respondWithError(w, 500, errors.New("oops!"))
+	respondWithError(w, 500, "error check")
 }

@@ -46,3 +46,49 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	)
 	return i, err
 }
+
+const deleteUserById = `-- name: DeleteUserById :execrows
+DELETE FROM users WHERE id = $1
+`
+
+func (q *Queries) DeleteUserById(ctx context.Context, id uuid.UUID) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteUserById, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
+const findUserById = `-- name: FindUserById :one
+SELECT id, username, password, created_at, updated_at FROM users WHERE id = $1
+`
+
+func (q *Queries) FindUserById(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRowContext(ctx, findUserById, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const findUserByUsername = `-- name: FindUserByUsername :one
+SELECT id, username, password, created_at, updated_at FROM users WHERE username = $1
+`
+
+func (q *Queries) FindUserByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRowContext(ctx, findUserByUsername, username)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

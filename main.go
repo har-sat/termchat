@@ -13,10 +13,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("error creating config: %v\n", err)
 	}
+
 	router := chi.NewRouter()
 	router.Get("/ready", cfg.readinessCheck)
 	router.Get("/err", cfg.errorReadinessCheck)
 	router.Get("/upgrade", cfg.HandlerUpgradeConnection)
+
+	router.Post("/users", cfg.HandlerCreateUser)
+	router.Post("/login", cfg.HandlerLogin)
 
 	server := http.Server{
 		Addr:    ":" + cfg.Env.PORT,
