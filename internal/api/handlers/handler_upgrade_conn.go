@@ -1,14 +1,16 @@
-package main
+package handlers
 
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/har-sat/termchat/utils"
 )
 
 func (cfg *Config) HandlerUpgradeConnection(w http.ResponseWriter, r *http.Request) {
 	conn, err := cfg.Upgrader.Upgrade(w, r, w.Header())
 	if err != nil {
-		respondWithError(w, 400, fmt.Sprintf("Error upgrading connection: %v\n", err))
+		utils.RespondWithError(w, 400, fmt.Sprintf("Error upgrading connection: %v\n", err))
 		return
 	}
 	defer conn.Close()

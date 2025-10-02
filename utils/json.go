@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func respondWithJSON(w http.ResponseWriter, code int, obj interface{}) {
+func RespondWithJSON(w http.ResponseWriter, code int, obj interface{}) {
 	data, err := json.Marshal(obj)
 	if err != nil {
 		w.WriteHeader(500)
@@ -18,10 +18,10 @@ func respondWithJSON(w http.ResponseWriter, code int, obj interface{}) {
 	w.Write(data)
 }
 
-func respondWithError(w http.ResponseWriter, code int, msg string) {
+func RespondWithError(w http.ResponseWriter, code int, msg string) {
 	if code >= 500 {
 		log.Printf("server error: %v\n", msg)
 	}
 
-	respondWithJSON(w, code, msg)
+	RespondWithJSON(w, code, msg)
 }

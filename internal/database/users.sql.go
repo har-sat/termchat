@@ -17,7 +17,7 @@ insert into
     USERS(ID, USERNAME, PASSWORD, CREATED_AT, UPDATED_AT) 
 values
     ($1, $2, $3, $4, $5)
-returning id, username, password, created_at, updated_at
+returning id, username, password, created_at, updated_at, api_key
 `
 
 type CreateUserParams struct {
@@ -43,6 +43,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ApiKey,
 	)
 	return i, err
 }
@@ -60,7 +61,7 @@ func (q *Queries) DeleteUserById(ctx context.Context, id uuid.UUID) (int64, erro
 }
 
 const findUserById = `-- name: FindUserById :one
-SELECT id, username, password, created_at, updated_at FROM users WHERE id = $1
+SELECT id, username, password, created_at, updated_at, api_key FROM users WHERE id = $1
 `
 
 func (q *Queries) FindUserById(ctx context.Context, id uuid.UUID) (User, error) {
@@ -72,12 +73,13 @@ func (q *Queries) FindUserById(ctx context.Context, id uuid.UUID) (User, error) 
 		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ApiKey,
 	)
 	return i, err
 }
 
 const findUserByUsername = `-- name: FindUserByUsername :one
-SELECT id, username, password, created_at, updated_at FROM users WHERE username = $1
+SELECT id, username, password, created_at, updated_at, api_key FROM users WHERE username = $1
 `
 
 func (q *Queries) FindUserByUsername(ctx context.Context, username string) (User, error) {
@@ -89,6 +91,7 @@ func (q *Queries) FindUserByUsername(ctx context.Context, username string) (User
 		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ApiKey,
 	)
 	return i, err
 }

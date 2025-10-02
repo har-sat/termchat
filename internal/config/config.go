@@ -1,11 +1,11 @@
-package main
+package config
 
 import (
 	"database/sql"
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/har-sat/termchat/internal/server/database"
+	"github.com/har-sat/termchat/internal/database"
 	_ "github.com/lib/pq"
 )
 
