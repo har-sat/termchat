@@ -16,10 +16,14 @@ type Config struct {
 	Env      *Env
 }
 
-func CreateConfig() (*Config, error) {
+var Cfg Config
+
+// instead of this returning a config object, set the Cfg object that is global to the package,
+// this way, all handlers don't have to be methods on the config struct
+func CreateConfig() (error) {
 	env, err := LoadEnv()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	upgrader := websocket.Upgrader{
@@ -30,15 +34,16 @@ func CreateConfig() (*Config, error) {
 
 	conn, err := sql.Open("postgres", env.DB_URL)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	db := database.New(conn)
 
-	return &Config{
-		DB:       db,
+	Cfg = Config{
+		DB: db,
 		Upgrader: upgrader,
-		Clients:  make(map[*websocket.Conn]bool),
-		Env:      env,
-	}, nil
+		Clients: make(map[*websocket.Conn]bool),
+		Env: env,
+	}
+	return  nil
 }

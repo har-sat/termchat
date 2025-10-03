@@ -7,12 +7,15 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/har-sat/termchat/internal/auth"
+	"github.com/har-sat/termchat/internal/config"
 	"github.com/har-sat/termchat/internal/database"
 	"github.com/har-sat/termchat/internal/models"
 	"github.com/har-sat/termchat/utils"
 )
 
-func (cfg *Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
+func  HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
+	cfg := config.Cfg
 	type params struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -26,7 +29,7 @@ func (cfg *Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hashedPassword, err := HashPassword(parameters.Password)
+	hashedPassword, err := auth.HashPassword(parameters.Password)
 	if err != nil {
 		utils.RespondWithError(w, 500, fmt.Sprintf("error hashing password: %v\n", err))
 		return
@@ -43,7 +46,8 @@ func (cfg *Config) HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	utils.RespondWithJSON(w, 201, models.DatabaseUserToUser(&usr))
 }
 
-func (cfg *Config) HandlerLogin(w http.ResponseWriter, r *http.Request) {
+func HandlerLogin(w http.ResponseWriter, r *http.Request) {
+	cfg := config.Cfg
 	type params struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -63,7 +67,7 @@ func (cfg *Config) HandlerLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := CompareWithHashedPassword(parameters.Password, user.Password); err != nil {
+	if err := auth.CompareWithHashedPassword(parameters.Password, user.Password); err != nil {
 		utils.RespondWithError(w, 400, "Unauthorized - passwords don't match")
 		return
 	}

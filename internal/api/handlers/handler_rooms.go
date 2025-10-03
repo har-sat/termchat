@@ -8,3 +8,4 @@ import (
 
 func HanlderGetAllRooms(w http.ResponseWriter, r *http.Request, usr database.User) {
 }
+
