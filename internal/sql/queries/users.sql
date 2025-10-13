@@ -14,3 +14,5 @@ SELECT * FROM users WHERE username = $1;
 -- name: DeleteUserById :execrows
 DELETE FROM users WHERE id = $1;
 
+-- name: GetUserByApiKey :one
+SELECT * FROM users WHERE api_key = $1;
