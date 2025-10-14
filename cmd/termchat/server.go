@@ -12,27 +12,33 @@ import (
 )
 
 func main() {
-	err := config.CreateConfig()
+	cfg, err := config.CreateConfig()
 	if err != nil {
 		log.Fatalf("error creating config: %v\n", err)
 	}
 	
 	router := chi.NewRouter()
+	authMiddleware := middlewares.NewAuthMiddleware(cfg.DB)
+
 	router.Get("/ready", handlers.ReadinessCheck)
 	router.Get("/err", handlers.ErrorReadinessCheck)
-	router.Get("/upgrade", handlers.HandlerUpgradeConnection)
 
-	router.Post("/users", handlers.HandlerCreateUser)
-	router.Get("/login", handlers.HandlerLogin)
+	// router.Get("/upgrade", handlers.HandlerUpgradeConnection)
 
-	router.Get("/rooms", middlewares.EnsureAuth(handlers.HanlderGetAllRooms))
+	userHanlder := handlers.NewUserHandler(cfg.DB)
+	router.Post("/users", userHanlder.CreateUser)
+	router.Get("/login", userHanlder.Login)
+
+	roomsHandler := handlers.NewRoomsHandler(cfg.DB)
+	router.Post("/rooms", authMiddleware.EnsureAuth(roomsHandler.CreateRoom))
+	router.Get("/rooms", authMiddleware.EnsureAuth(roomsHandler.GetAllRooms))
 	
 	server := http.Server{
-		Addr:    ":" + config.Cfg.Env.PORT,
+		Addr:    ":" + cfg.Env.PORT,
 		Handler: router,
 	}
 
-	fmt.Printf("Starting server on PORT: %v\n", config.Cfg.Env.PORT)
+	fmt.Printf("Starting server on PORT: %v\n", cfg.Env.PORT)
 	err = server.ListenAndServe()
 	if err != nil {
 		log.Fatal("Server error: ", err)
