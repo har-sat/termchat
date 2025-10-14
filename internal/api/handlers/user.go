@@ -8,14 +8,20 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/har-sat/termchat/internal/auth"
-	"github.com/har-sat/termchat/internal/config"
 	"github.com/har-sat/termchat/internal/database"
 	"github.com/har-sat/termchat/internal/models"
 	"github.com/har-sat/termchat/utils"
 )
 
-func  HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
-	cfg := config.Cfg
+type UserHandler struct {
+	db *database.Queries
+}
+
+func NewUserHandler(db *database.Queries) *UserHandler {
+	return &UserHandler{db: db}
+}
+
+func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	type params struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -35,7 +41,7 @@ func  HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usr, err := cfg.DB.CreateUser(r.Context(), database.CreateUserParams{
+	usr, err := h.db.CreateUser(r.Context(), database.CreateUserParams{
 		ID:        uuid.New(),
 		Username:  parameters.Username,
 		Password:  string(hashedPassword),
@@ -46,8 +52,7 @@ func  HandlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	utils.RespondWithJSON(w, 201, models.DatabaseUserToUser(&usr))
 }
 
-func HandlerLogin(w http.ResponseWriter, r *http.Request) {
-	cfg := config.Cfg
+func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	type params struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -61,7 +66,7 @@ func HandlerLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := cfg.DB.FindUserByUsername(r.Context(), parameters.Username)
+	user, err := h.db.FindUserByUsername(r.Context(), parameters.Username)
 	if err != nil {
 		utils.RespondWithError(w, 400, fmt.Sprintf("username %v doesn't exist\n", parameters.Username))
 		return
