@@ -2,17 +2,15 @@ package config
 
 import (
 	"database/sql"
-	"time"
 
-	"github.com/gorilla/websocket"
+	"github.com/har-sat/termchat/internal/api/ws"
 	"github.com/har-sat/termchat/internal/database"
 	_ "github.com/lib/pq"
 )
 
 type Config struct {
 	DB       *database.Queries
-	Upgrader websocket.Upgrader
-	Clients  map[*websocket.Conn]bool
+	Hub 	 *ws.Hub
 	Env      *Env
 }
 
@@ -22,24 +20,17 @@ func CreateConfig() (*Config, error) {
 		return nil, err
 	}
 
-	upgrader := websocket.Upgrader{
-		ReadBufferSize:   1024,
-		WriteBufferSize:  1024,
-		HandshakeTimeout: 10 * time.Second,
-	}
-
 	conn, err := sql.Open("postgres", env.DB_URL)
 	if err != nil {
 		return nil, err
 	}
-
 	db := database.New(conn)
 
+	hub := ws.CreateHub()
 	cfg := Config{
 		DB: db,
-		Upgrader: upgrader,
-		Clients: make(map[*websocket.Conn]bool),
 		Env: env,
+		Hub: hub,
 	}
 	return  &cfg, nil
 }

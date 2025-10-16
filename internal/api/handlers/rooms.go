@@ -7,17 +7,18 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/har-sat/termchat/internal/api/ws"
 	"github.com/har-sat/termchat/internal/database"
 	"github.com/har-sat/termchat/utils"
 )
 
 type RoomsHandler struct {
 	db *database.Queries
-	// conns map[*websocket.Conn]bool
+	hub *ws.Hub
 }
 
-func NewRoomsHandler(db *database.Queries) *RoomsHandler {
-	return &RoomsHandler{db: db}
+func NewRoomsHandler(db *database.Queries, hub *ws.Hub) *RoomsHandler {
+	return &RoomsHandler{db: db, hub: hub}
 }
 
 func (h *RoomsHandler) CreateRoom(w http.ResponseWriter, r *http.Request, user database.User) {
@@ -42,7 +43,8 @@ func (h *RoomsHandler) CreateRoom(w http.ResponseWriter, r *http.Request, user d
 		return
 	}
 
-	//websocket logic to create room
+
+	h.hub.CreateRoom(&room)
 	utils.RespondWithJSON(w, 201, room)
 }
 

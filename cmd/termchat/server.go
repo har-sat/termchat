@@ -29,7 +29,7 @@ func main() {
 	router.Post("/users", userHanlder.CreateUser)
 	router.Get("/login", userHanlder.Login)
 
-	roomsHandler := handlers.NewRoomsHandler(cfg.DB)
+	roomsHandler := handlers.NewRoomsHandler(cfg.DB, cfg.Hub)
 	router.Post("/rooms", authMiddleware.EnsureAuth(roomsHandler.CreateRoom))
 	router.Get("/rooms", authMiddleware.EnsureAuth(roomsHandler.GetAllRooms))
 	
