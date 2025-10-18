@@ -32,6 +32,9 @@ func main() {
 	roomsHandler := handlers.NewRoomsHandler(cfg.DB, cfg.Hub)
 	router.Post("/rooms", authMiddleware.EnsureAuth(roomsHandler.CreateRoom))
 	router.Get("/rooms", authMiddleware.EnsureAuth(roomsHandler.GetAllRooms))
+
+	socketHandler := handlers.NewSocketHandler(cfg.DB, &cfg.Hub.Upgrader, cfg.Hub)
+	router.Get("/ws/{id}",authMiddleware.EnsureAuth(socketHandler.ConnectToRoom))
 	
 	server := http.Server{
 		Addr:    ":" + cfg.Env.PORT,
