@@ -40,5 +40,6 @@ func (hub *Hub) CreateRoom(r *database.Room) bool {
 	hub.Rooms[r.ID] = room
 	
 	go room.RunRoom()
+	
 	return true
 }

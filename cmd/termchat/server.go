@@ -23,8 +23,6 @@ func main() {
 	router.Get("/ready", handlers.ReadinessCheck)
 	router.Get("/err", handlers.ErrorReadinessCheck)
 
-	// router.Get("/upgrade", handlers.HandlerUpgradeConnection)
-
 	userHanlder := handlers.NewUserHandler(cfg.DB)
 	router.Post("/users", userHanlder.CreateUser)
 	router.Get("/login", userHanlder.Login)
@@ -35,6 +33,7 @@ func main() {
 
 	socketHandler := handlers.NewSocketHandler(cfg.DB, &cfg.Hub.Upgrader, cfg.Hub)
 	router.Get("/ws/{id}",authMiddleware.EnsureAuth(socketHandler.ConnectToRoom))
+	router.Get("ws/join", authMiddleware.EnsureAuth(socketHandler.ConnectToRoom))
 	
 	server := http.Server{
 		Addr:    ":" + cfg.Env.PORT,

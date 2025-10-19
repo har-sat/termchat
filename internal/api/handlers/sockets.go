@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/har-sat/termchat/internal/api/ws"
@@ -27,7 +26,8 @@ func NewSocketHandler(db *database.Queries, Upgrader *websocket.Upgrader, Hub *w
 }
 
 func (h *SocketHandler) ConnectToRoom(w http.ResponseWriter, r *http.Request, user database.User) {
-	strID := chi.URLParam(r, "id")
+	params := r.URL.Query()
+	strID := params.Get("roomID")
 	if strID == "" {
 		utils.RespondWithError(w, 400, "invalid room ID (can't be \"\")")
 		return

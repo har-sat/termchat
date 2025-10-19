@@ -16,7 +16,7 @@ type Room struct {
 	CreatorID uuid.UUID
 	Join      chan *Client
 	Leave     chan *Client
-	Forward   chan []byte
+	Forward   chan *Message
 }
 
 func (r *Room) RunRoom() {
