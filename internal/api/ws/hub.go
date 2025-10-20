@@ -35,7 +35,7 @@ func (hub *Hub) CreateRoom(r *database.Room) bool {
 		Clients: make(map[*Client]bool),
 		Join: make(chan *Client),
 		Leave: make(chan *Client),
-		Forward: make(chan []byte),
+		Forward: make(chan *Message),
 	}
 	hub.Rooms[r.ID] = room
 	

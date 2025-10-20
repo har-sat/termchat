@@ -55,7 +55,7 @@ func (h *SocketHandler) ConnectToRoom(w http.ResponseWriter, r *http.Request, us
 		ID:      user.ID,
 		Name:    user.Username,
 		Conn:    conn,
-		Receive: make(chan []byte),
+		Receive: make(chan *ws.Message),
 		Room:    room,
 	}
 	room.Join <- &client
